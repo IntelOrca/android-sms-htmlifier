@@ -1,0 +1,78 @@
+<html>
+<head>
+	<title>{{TITLE}}</title>
+	<style>
+		body {
+			font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+			font-size: 11px;
+			line-height: 14px;
+			margin-top: 32px;
+		}
+
+		a {
+			color: #3B5998;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		#people {
+			text-align: center;
+			font-weight: bold;
+		}
+
+		#messages {
+			margin: 0 auto;
+			width: 500px;
+		}
+
+		#messages ul {
+			padding: 0;
+		}
+
+		#messages ul li {
+			border-top: 1px solid #e9e9e9;
+			list-style-type: none;
+			padding: 8px;
+		}
+
+		.name {
+			font-weight: bold;
+		}
+
+		.time {
+			color: #aaa;
+			float: right;
+		}
+
+		.content {
+			line-height: 17px;    
+			margin-top: 4px;
+			margin-bottom: 2px;
+			text-align: justify;
+			width: 400px;
+		}
+	</style>
+</head>
+
+<body>
+
+<div id="people">{{PEOPLE}}</div>
+
+<div id="messages">
+<ul>
+    {{BEGIN_MESSAGE}}
+    <li>
+        <div class="time"><time>{{TIME}}</time></div>
+        <div class="name">{{SENDER}}</div>
+        <div class="content">{{CONTENT}}</div>
+    </li>
+    {{END_MESSAGE}}
+</ul>
+</div>
+
+</body>
+
+</html>
