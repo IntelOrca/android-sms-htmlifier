@@ -13,6 +13,9 @@ using System.Xml;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
+	/// <summary>
+	/// Represents a collection of SMSes.
+	/// </summary>
 	class SmsCollection : List<Sms>
 	{
 		public SmsCollection()
@@ -25,11 +28,20 @@ namespace rd3korca.AndroidSmsHtmlifier
 		{
 		}
 
+		/// <summary>
+		/// Sorts the SMS collection by date from oldest to newest.
+		/// </summary>
 		public void SortByDate()
 		{
 			this.Sort(new Comparison<Sms>((x, y) => x.Timestamp.CompareTo(y.Timestamp)));
 		}
 
+		/// <summary>
+		/// Opens the specified path to an xml file of backed up SMSes and creates an SMS collection.
+		/// </summary>
+		/// <param name="xmlPath">Path to the xml file containing SMSes.</param>
+		/// <param name="ownerName">Name of the owner of the phone containing the SMSes.</param>
+		/// <returns>an SMS collection of all the SMSes in the xml file.</returns>
 		public static SmsCollection FromXmlFile(string xmlPath, string ownerName)
 		{
 			SmsCollection smsCollection = new SmsCollection();
@@ -57,6 +69,10 @@ namespace rd3korca.AndroidSmsHtmlifier
 			return smsCollection;
 		}
 
+		/// <summary>
+		/// Outputs a simple text file log of all the SMSes.
+		/// </summary>
+		/// <param name="path">Path of the file to save the log to.</param>
 		public void OutputTextLog(string path)
 		{
 			StringBuilder sb = new StringBuilder();
@@ -67,6 +83,10 @@ namespace rd3korca.AndroidSmsHtmlifier
 			File.WriteAllText(path, sb.ToString());
 		}
 
+		/// <summary>
+		/// Outputs a complex HTML file containing all the SMSes.
+		/// </summary>
+		/// <param name="path">Path to where to save the HTML file.</param>
 		public void OutputHtml(string path)
 		{
 			// Get template from resource
