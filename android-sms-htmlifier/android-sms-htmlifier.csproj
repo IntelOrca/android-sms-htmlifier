@@ -37,9 +37,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="GenericMessage.cs" />
+    <Compile Include="IMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Sms.cs" />
-    <Compile Include="SmsCollection.cs" />
+    <Compile Include="MessageCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
