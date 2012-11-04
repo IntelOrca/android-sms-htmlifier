@@ -14,17 +14,17 @@ using System.Xml;
 namespace rd3korca.AndroidSmsHtmlifier
 {
 	/// <summary>
-	/// Represents a collection of SMSes.
+	/// Represents a collection of Messages.
 	/// </summary>
-	class SmsCollection : List<Sms>
+	class MessageCollection : List<IMessage>
 	{
-		public SmsCollection()
+		public MessageCollection()
 			: base()
 		{
 		}
 
-		public SmsCollection(IEnumerable<Sms> smses)
-			: base(smses)
+		public MessageCollection(IEnumerable<IMessage> messages)
+			: base(messages)
 		{
 		}
 
@@ -33,40 +33,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// </summary>
 		public void SortByDate()
 		{
-			this.Sort(new Comparison<Sms>((x, y) => x.Timestamp.CompareTo(y.Timestamp)));
-		}
-
-		/// <summary>
-		/// Opens the specified path to an xml file of backed up SMSes and creates an SMS collection.
-		/// </summary>
-		/// <param name="xmlPath">Path to the xml file containing SMSes.</param>
-		/// <param name="ownerName">Name of the owner of the phone containing the SMSes.</param>
-		/// <returns>an SMS collection of all the SMSes in the xml file.</returns>
-		public static SmsCollection FromXmlFile(string xmlPath, string ownerName)
-		{
-			SmsCollection smsCollection = new SmsCollection();
-
-			// Load xml document
-			XmlDocument doc = new XmlDocument();
-			doc.Load(xmlPath);
-
-			// Read each sms element
-			foreach (XmlNode smsNode in doc.SelectNodes("smses/sms")) {
-				Sms sms = new Sms();
-				sms.OwnerName = ownerName;
-				sms.Sent = (smsNode.Attributes["type"].Value == "2");
-				sms.Timestamp = Program.FromUnixTime(smsNode.Attributes["date"].Value);
-				sms.Number = smsNode.Attributes["address"].Value;
-				sms.Contact = smsNode.Attributes["contact_name"].Value;
-				sms.Body = smsNode.Attributes["body"].Value;
-
-				if (sms.Contact == "(Unknown)")
-					sms.Contact = sms.Number;
-
-				smsCollection.Add(sms);
-			}
-
-			return smsCollection;
+			this.Sort(new Comparison<IMessage>((x, y) => x.Timestamp.CompareTo(y.Timestamp)));
 		}
 
 		/// <summary>
@@ -77,7 +44,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 		{
 			StringBuilder sb = new StringBuilder();
 			foreach (Sms sms in this) {
-				sb.AppendFormat("[{0}] {1," + sms.Contact.Length + "}: {2}", sms.Timestamp, sms.Sender, sms.Body);
+				sb.AppendFormat("[{0}] {1," + sms.Contact.Length + "}: {2}", sms.Timestamp, sms.FromContact, sms.Text);
 				sb.AppendLine();
 			}
 			File.WriteAllText(path, sb.ToString());
@@ -106,12 +73,12 @@ namespace rd3korca.AndroidSmsHtmlifier
 
 			// Messages
 			StringBuilder sb = new StringBuilder();
-			foreach (Sms sms in this) {
+			foreach (IMessage msg in this) {
 				string newMessage = msgHtml;
-				string sender = Program.HtmlSpecialChars(sms.Sender);
-				newMessage = newMessage.Replace("{{TIME}}", Program.HtmlSpecialChars(sms.Timestamp.ToString()));
+				string sender = Program.HtmlSpecialChars(msg.FromContact);
+				newMessage = newMessage.Replace("{{TIME}}", Program.HtmlSpecialChars(msg.Timestamp.ToString()));
 				newMessage = newMessage.Replace("{{SENDER}}", sender);
-				newMessage = newMessage.Replace("{{CONTENT}}", Program.HtmlSpecialChars(sms.Body));
+				newMessage = newMessage.Replace("{{CONTENT}}", Program.HtmlSpecialChars(msg.Text));
 				sb.Append(newMessage);
 				if (people.ContainsKey(sender)) {
 					people[sender]++;
