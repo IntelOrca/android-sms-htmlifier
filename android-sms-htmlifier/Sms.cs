@@ -6,13 +6,15 @@
  *****************************************************************************/
 
 using System;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
 	/// <summary>
 	/// Represents a single SMS.
 	/// </summary>
-	struct Sms
+	struct Sms : IMessage
 	{
 		private string mOwnerName;
 
@@ -20,17 +22,50 @@ namespace rd3korca.AndroidSmsHtmlifier
 		private DateTime mTimestamp;
 		private string mNumber;
 		private string mContact;
-		private string mBody;
+		private string mText;
 
 		public override string ToString()
 		{
-			return String.Format("From = {0} To = {1} Content = {2}", Sender, Receiver, mContact.Substring(0, Math.Min(8, mContact.Length)));
+			return String.Format("From = {0} To = {1} Content = {2}", FromContact, ToContacts[0], mContact.Substring(0, Math.Min(8, mContact.Length)));
+		}
+
+		/// <summary>
+		/// Opens the specified path to an xml file of backed up SMSes and creates an SMS collection.
+		/// </summary>
+		/// <param name="xmlPath">Path to the xml file containing SMSes.</param>
+		/// <param name="ownerName">Name of the owner of the phone containing the SMSes.</param>
+		/// <returns>an SMS collection of all the SMSes in the xml file.</returns>
+		public static Sms[] FromXmlFile(string xmlPath, string ownerName)
+		{
+			List<Sms> smsCollection = new List<Sms>();
+
+			// Load xml document
+			XmlDocument doc = new XmlDocument();
+			doc.Load(xmlPath);
+
+			// Read each sms element
+			foreach (XmlNode smsNode in doc.SelectNodes("smses/sms")) {
+				Sms sms = new Sms();
+				sms.OwnerName = ownerName;
+				sms.Sent = (smsNode.Attributes["type"].Value == "2");
+				sms.Timestamp = Program.FromUnixTime(smsNode.Attributes["date"].Value);
+				sms.Number = smsNode.Attributes["address"].Value;
+				sms.Contact = smsNode.Attributes["contact_name"].Value;
+				sms.Text = smsNode.Attributes["body"].Value;
+
+				if (sms.Contact == "(Unknown)")
+					sms.Contact = sms.Number;
+
+				smsCollection.Add(sms);
+			}
+
+			return smsCollection.ToArray();
 		}
 
 		/// <summary>
 		/// Gets the name of the person that sent the SMS.
 		/// </summary>
-		public string Sender
+		public string FromContact
 		{
 			get
 			{
@@ -41,11 +76,11 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// <summary>
 		/// Gets the name of the receiving person of the SMS.
 		/// </summary>
-		public string Receiver
+		public string[] ToContacts
 		{
 			get
 			{
-				return (mSent ? mContact : mOwnerName);
+				return new string[] { (mSent ? mContact : mOwnerName) };
 			}
 		}
 
@@ -127,15 +162,15 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// <summary>
 		/// Gets or sets the body / content of the SMS.
 		/// </summary>
-		public string Body
+		public string Text
 		{
 			get
 			{
-				return mBody;
+				return mText;
 			}
 			set
 			{
-				mBody = value;
+				mText = value;
 			}
 		}
 	}
