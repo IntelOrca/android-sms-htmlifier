@@ -6,7 +6,7 @@
  *****************************************************************************/
 
 using System;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
@@ -14,11 +14,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 	{
 		static void Main(string[] args)
 		{
-			SmsCollection smses = SmsCollection.FromXmlFile(@"", "");
-			SmsCollection outSmses = smses;
 
-			outSmses.SortByDate();
-			outSmses.OutputHtml(@"");
 		}
 
 		public static string HtmlSpecialChars(string text)
