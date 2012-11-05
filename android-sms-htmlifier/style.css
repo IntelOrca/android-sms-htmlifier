@@ -40,13 +40,18 @@ body {
   color: #222;
 }
 
-#convo {
+.convo {
   position: absolute;
   right: 0;
   top: 30px;
   bottom: 0;
+  display: none;
   width: 719px;
   box-shadow: inset 0px 0px 18px 2px #333;
+}
+
+.convo.active {
+	display: block;
 }
 
 a {

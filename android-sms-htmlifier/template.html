@@ -6,13 +6,14 @@
   <body>
     <aside id="sidebar">
       <ul id="convo_list">
-        <li><a href="#1">Item goes here</a></li>
-        <li><a href="#2">Item goes here</a></li>
-        <li><a href="#3">Item goes here</a></li>
+        {{BEGIN_LIST}}
+        <li><a href="#{{CONVO_ID}}">{{CONVO_ITEM}}</a></li>
+        {{END_LIST}}
       </ul>
     </aside>
     <section id="people">{{PEOPLE}}</section>
-    <section id="convo">
+    {{BEGIN_CONVO}}
+    <section class="convo" id="convo_{{CONVO_ID}}">
       <div id="messages">
         <ul>
           {{BEGIN_MESSAGE}}
@@ -25,6 +26,7 @@
         </ul>
       </div>
     </section>
+    {{END_CONVO}}
     <script src="script.js"></script>
   </body>
 </html>
