@@ -18,4 +18,7 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
     sidebarItems[i].addEventListener("click",sidebarItemClick,false);
   }
 
+  //sidebarItems[0].click();
+  document.querySelectorAll('.convo')[0].style.display='block';
+
 })();
