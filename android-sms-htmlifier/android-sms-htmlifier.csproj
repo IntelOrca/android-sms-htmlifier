@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="GenericMessage.cs" />
+    <Compile Include="HtmlTemplateBlock.cs" />
     <Compile Include="IMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Sms.cs" />

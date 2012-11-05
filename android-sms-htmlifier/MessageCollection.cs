@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -56,48 +57,107 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// <param name="path">Path to where to save the HTML file.</param>
 		public void OutputHtml(string path)
 		{
-			// Get template from resource
-			string html = File.ReadAllText("../../template.html");
+			HtmlTemplateBlock block = new HtmlTemplateBlock(File.ReadAllText("../../template.html"));
+			block.SetPlaceholder("TITLE", "SMSes");
 
-			// Find message template within page template
-			int start = html.IndexOf("{{BEGIN_MESSAGE}}");
-			int end = html.IndexOf("{{END_MESSAGE}}");
-			string msgHtml = html.Substring(start + 17, end - start - 17);
-			html = html.Remove(start, end - start);
-
-			// Change title
-			html = html.Replace("{{TITLE}}", Program.HtmlSpecialChars("SMS of "));
-
-			// Store participants and message counts
-			Dictionary<String, int> people = new Dictionary<string, int>();
-
-			// Messages
-			StringBuilder sb = new StringBuilder();
+			// Get converstations
+			Dictionary<string, List<IMessage>> convos = new Dictionary<string, List<IMessage>>();
 			foreach (IMessage msg in this) {
-				string newMessage = msgHtml;
-				string sender = Program.HtmlSpecialChars(msg.FromContact);
-				newMessage = newMessage.Replace("{{TIME}}", Program.HtmlSpecialChars(msg.Timestamp.ToString()));
-				newMessage = newMessage.Replace("{{SENDER}}", sender);
-				newMessage = newMessage.Replace("{{CONTENT}}", Program.HtmlSpecialChars(msg.Text));
-				sb.Append(newMessage);
-				if (people.ContainsKey(sender)) {
-					people[sender]++;
+				if (msg.FromContact == "Ted John") {
+					if (!convos.ContainsKey(msg.ToContacts[0]))
+						convos[msg.ToContacts[0]] = new List<IMessage>();
+					convos[msg.ToContacts[0]].Add(msg);
 				} else {
-					people.Add(sender, 1);
+					if (!convos.ContainsKey(msg.FromContact))
+						convos[msg.FromContact] = new List<IMessage>();
+					convos[msg.FromContact].Add(msg);
 				}
 			}
-			html = html.Replace("{{END_MESSAGE}}", sb.ToString());
 
-			string peopleText = "";
-			foreach (KeyValuePair<string, int> kvp in people) {
-				peopleText += kvp.Value + " from " + kvp.Key + "<br/>";
+			// Replace convo tempalte bit
+			HtmlTemplateBlock listItemTemplate = block.GetBlock("LIST");
+			List<HtmlTemplateBlock> listItems = new List<HtmlTemplateBlock>();
+			foreach (KeyValuePair<string, List<IMessage>> kvp in convos) {
+				HtmlTemplateBlock listItem = (HtmlTemplateBlock)listItemTemplate.Clone();
+				listItem.SetPlaceholder("CONVO_ID", kvp.Key);
+				listItem.SetPlaceholder("CONVO_ITEM", kvp.Key);
+				listItems.Add(listItem);
 			}
 
-			// Add people list
-			html = html.Replace("{{PEOPLE}}", peopleText);
+			block.ReplaceBlock("LIST", new HtmlTemplateBlock(listItems));
+
+			// Now for each convo
+			HtmlTemplateBlock convoTemplate = block.GetBlock("CONVO");
+			List<HtmlTemplateBlock> convoHtmls = new List<HtmlTemplateBlock>();
+			foreach (KeyValuePair<string, List<IMessage>> kvp in convos) {
+				HtmlTemplateBlock convoHtml = (HtmlTemplateBlock)convoTemplate.Clone();
+				convoHtml.SetPlaceholder("CONVO_ID", kvp.Key);
+				HtmlTemplateBlock messageTemplate = convoHtml.GetBlock("MESSAGE");
+				List<HtmlTemplateBlock> messages = new List<HtmlTemplateBlock>();
+				foreach (IMessage msg in kvp.Value) {
+					HtmlTemplateBlock message = (HtmlTemplateBlock)messageTemplate.Clone();
+					message.SetPlaceholder("TIME", msg.Timestamp.ToUnixTime().ToString());
+					message.SetPlaceholder("SENDER", msg.FromContact);
+					message.SetPlaceholder("CONTENT", msg.Text);
+					messages.Add(message);
+				}
+				convoHtml.ReplaceBlock("MESSAGE", new HtmlTemplateBlock(messages));
+				convoHtmls.Add(convoHtml);
+			}
+
+			block.ReplaceBlock("CONVO", new HtmlTemplateBlock(convoHtmls));
 
 			// Output to file
-			File.WriteAllText(path, html);
+			File.WriteAllText(path, block.Html);
+
+			string styleDestPath = Path.Combine(Path.GetDirectoryName(path), "style.css");
+			string jsDestPath = Path.Combine(Path.GetDirectoryName(path), "script.js");
+			File.Copy("../../style.css", styleDestPath, true);
+			File.Copy("../../script.js", jsDestPath, true);
+
+
+			//// Get template from resource
+			//string html = File.ReadAllText("../../template.html");
+
+			//// Find message template within page template
+			//int start = html.IndexOf("{{BEGIN_MESSAGE}}");
+			//int end = html.IndexOf("{{END_MESSAGE}}");
+			//string msgHtml = html.Substring(start + 17, end - start - 17);
+			//html = html.Remove(start, end - start);
+
+			//// Change title
+			//html = html.Replace("{{TITLE}}", Program.HtmlSpecialChars("SMS of "));
+
+			//// Store participants and message counts
+			//Dictionary<String, int> people = new Dictionary<string, int>();
+
+			//// Messages
+			//StringBuilder sb = new StringBuilder();
+			//foreach (IMessage msg in this) {
+			//	string newMessage = msgHtml;
+			//	string sender = Program.HtmlSpecialChars(msg.FromContact);
+			//	newMessage = newMessage.Replace("{{TIME}}", Program.HtmlSpecialChars(msg.Timestamp.ToString()));
+			//	newMessage = newMessage.Replace("{{SENDER}}", sender);
+			//	newMessage = newMessage.Replace("{{CONTENT}}", Program.HtmlSpecialChars(msg.Text));
+			//	sb.Append(newMessage);
+			//	if (people.ContainsKey(sender)) {
+			//		people[sender]++;
+			//	} else {
+			//		people.Add(sender, 1);
+			//	}
+			//}
+			//html = html.Replace("{{END_MESSAGE}}", sb.ToString());
+
+			//string peopleText = "";
+			//foreach (KeyValuePair<string, int> kvp in people) {
+			//	peopleText += kvp.Value + " from " + kvp.Key + "<br/>";
+			//}
+
+			//// Add people list
+			//html = html.Replace("{{PEOPLE}}", peopleText);
+
+			//// Output to file
+			//File.WriteAllText(path, html);
 		}
 	}
 }
