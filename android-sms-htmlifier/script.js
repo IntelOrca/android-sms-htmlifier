@@ -3,6 +3,9 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
 
 (function init(){
 
+  var peopleEl=document.querySelector('#people');
+  var sidebarItems=document.getElementById('convo_list').querySelectorAll('a');
+
   console.log('1299627946000 was '+relativeDate(1299627946000));
 
   function sidebarItemClick(e){
@@ -12,13 +15,14 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
     e.preventDefault();
     return false;
   }
- 
-  var sidebarItems=document.getElementById('convo_list').querySelectorAll('a');
+  
   for(i=0;i<sidebarItems.length;i++){
     sidebarItems[i].addEventListener("click",sidebarItemClick,false);
   }
 
   //sidebarItems[0].click();
   document.querySelectorAll('.convo')[0].style.display='block';
+
+  peopleEl.innerHTML=people[0];
 
 })();
