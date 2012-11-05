@@ -55,7 +55,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// Outputs a complex HTML file containing all the SMSes.
 		/// </summary>
 		/// <param name="path">Path to where to save the HTML file.</param>
-		public void OutputHtml(string path)
+		public void OutputHtml(string path, string fromContact)
 		{
 			HtmlTemplateBlock block = new HtmlTemplateBlock(File.ReadAllText("../../template.html"));
 			block.SetPlaceholder("TITLE", "SMSes");
@@ -63,7 +63,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 			// Get converstations
 			Dictionary<string, List<IMessage>> convoDictionary = new Dictionary<string, List<IMessage>>();
 			foreach (IMessage msg in this) {
-				if (msg.FromContact == "Ted John") {
+				if (msg.FromContact == fromContact) {
 					if (!convoDictionary.ContainsKey(msg.ToContacts[0]))
 						convoDictionary[msg.ToContacts[0]] = new List<IMessage>();
 					convoDictionary[msg.ToContacts[0]].Add(msg);

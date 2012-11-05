@@ -14,7 +14,11 @@ namespace rd3korca.AndroidSmsHtmlifier
 	{
 		static void Main(string[] args)
 		{
-
+			string ownerName = "James";
+			Sms[] test = Sms.FromXmlFile("../../test/test.xml", ownerName);
+			MessageCollection msgCollection = new MessageCollection();
+			Array.ForEach(test, x => msgCollection.Add (x));
+			msgCollection.OutputHtml("../../test/test.html", ownerName);
 		}
 
 		public static string HtmlSpecialChars(string text)

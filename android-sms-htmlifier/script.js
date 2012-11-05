@@ -4,20 +4,23 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
 (function init(){
 
   var peopleEl=document.querySelector('#people');
-  var sidebarItems=document.getElementById('convo_list').querySelectorAll('a');
-
-  console.log('1299627946000 was '+relativeDate(1299627946000));
-  
+  var sidebarItems=document.getElementById('convo_list').querySelectorAll('a');  
   var timeNodes = document.querySelectorAll('time');
-  for (var i = 0; i < timeNodes.length; i++)
-    timeNodes[i].innerHTML = relativeDate(timeNodes[i].innerHTML);
+
+  for (var i = 0, l = timeNodes.length; i < l; i++) {
+    var d = new Date ( parseInt ( timeNodes[i].getAttribute('datetime') ) );
+    var time = d.toLocaleTimeString ()
+    d = d.toLocaleDateString () + ' @ ' + time;
+    timeNodes[i].setAttribute('title', d);
+    timeNodes[i].innerHTML = relativeDate(timeNodes[i].innerHTML) + ' @ ' + time;
+  }
 
   function sidebarItemClick(e){
     // ...
     console.log('Clicked item with hash of '+e.target.hash);
     // .className = 'convo active';
 	var convos = document.querySelectorAll('.convo');
-	for (var i = 0; i < convos.length; i++)
+	for (var i = 0, l = convos.length; i < l; i++)
 		convos[i].style.display = 'none';
 	document.getElementById("convo_" + e.target.hash.substring(1)).style.display = 'block';
     e.preventDefault();

@@ -44,7 +44,6 @@ namespace rd3korca.AndroidSmsHtmlifier
 
 			int start = mHtml.IndexOf(begin_identifier);
 			int end = mHtml.IndexOf(end_identifier);
-			string blockHtml = mHtml.Substring(start + begin_identifier.Length, end - start - begin_identifier.Length);
 			mHtml = mHtml.Remove(start, end - start);
 			mHtml = mHtml.Replace(end_identifier, block.Html);
 		}
