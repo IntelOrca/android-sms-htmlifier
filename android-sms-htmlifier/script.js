@@ -7,11 +7,19 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
   var sidebarItems=document.getElementById('convo_list').querySelectorAll('a');
 
   console.log('1299627946000 was '+relativeDate(1299627946000));
+  
+  var timeNodes = document.querySelectorAll('time');
+  for (var i = 0; i < timeNodes.length; i++)
+    timeNodes[i].innerHTML = relativeDate(timeNodes[i].innerHTML);
 
   function sidebarItemClick(e){
     // ...
     console.log('Clicked item with hash of '+e.target.hash);
     // .className = 'convo active';
+	var convos = document.querySelectorAll('.convo');
+	for (var i = 0; i < convos.length; i++)
+		convos[i].style.display = 'none';
+	document.getElementById("convo_" + e.target.hash.substring(1)).style.display = 'block';
     e.preventDefault();
     return false;
   }
