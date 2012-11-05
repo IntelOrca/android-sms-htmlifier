@@ -22,6 +22,11 @@ namespace rd3korca.AndroidSmsHtmlifier
 			get;
 		}
 
+		ParticipantList Participants
+		{
+			get;
+		}
+
 		string Text
 		{
 			get;
