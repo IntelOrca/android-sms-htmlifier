@@ -21,6 +21,7 @@ body {
   width: 239px;
   background: #f4f4f4;
   border-right: 1px #ccc solid;
+  overflow-y: scroll;
 }
 
 #convo_list {
@@ -48,6 +49,7 @@ body {
   display: none;
   width: 719px;
   box-shadow: inset 0px 0px 18px 2px #333;
+  overflow-y: scroll;
 }
 
 .convo.active {
