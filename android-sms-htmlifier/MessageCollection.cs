@@ -61,28 +61,32 @@ namespace rd3korca.AndroidSmsHtmlifier
 			block.SetPlaceholder("TITLE", "SMSes");
 
 			// Get converstations
-			Dictionary<string, List<IMessage>> convoDictionary = new Dictionary<string, List<IMessage>>();
+			List<Conversation> conversations = new List<Conversation>();
 			foreach (IMessage msg in this) {
-				if (msg.FromContact == fromContact) {
-					if (!convoDictionary.ContainsKey(msg.ToContacts[0]))
-						convoDictionary[msg.ToContacts[0]] = new List<IMessage>();
-					convoDictionary[msg.ToContacts[0]].Add(msg);
-				} else {
-					if (!convoDictionary.ContainsKey(msg.FromContact))
-						convoDictionary[msg.FromContact] = new List<IMessage>();
-					convoDictionary[msg.FromContact].Add(msg);
+				bool foundConvo = false;
+				foreach (Conversation conversation in conversations) {
+					if (conversation.Participants.Equals(msg.Participants)) {
+						conversation.AddMessage(msg);
+						foundConvo = true;
+						break;
+					}
+				}
+
+				if (!foundConvo) {
+					Conversation conversation = new Conversation(msg.Participants);
+					conversation.AddMessage(msg);
+					conversations.Add(conversation);
 				}
 			}
-
-			IOrderedEnumerable<KeyValuePair<string, List<IMessage>>> convos = convoDictionary.OrderByDescending(x => x.Value.Count);
+			conversations.Sort(new Comparison<Conversation>((x, y) => y.Count.CompareTo(x.Count)));
 
 			// Replace convo tempalte bit
 			HtmlTemplateBlock listItemTemplate = block.GetBlock("LIST");
 			List<HtmlTemplateBlock> listItems = new List<HtmlTemplateBlock>();
-			foreach (KeyValuePair<string, List<IMessage>> kvp in convos) {
+			foreach (Conversation conversation in conversations) {
 				HtmlTemplateBlock listItem = (HtmlTemplateBlock)listItemTemplate.Clone();
-				listItem.SetPlaceholder("CONVO_ID", kvp.Key);
-				listItem.SetPlaceholder("CONVO_ITEM", String.Format("{0} ({1})", kvp.Key, kvp.Value.Count));
+				listItem.SetPlaceholder("CONVO_ID", conversation.Participants.ToString());
+				listItem.SetPlaceholder("CONVO_ITEM", String.Format("{0} ({1})", conversation.Participants.ToString(), conversation.Count));
 				listItems.Add(listItem);
 			}
 
@@ -91,12 +95,12 @@ namespace rd3korca.AndroidSmsHtmlifier
 			// Now for each convo
 			HtmlTemplateBlock convoTemplate = block.GetBlock("CONVO");
 			List<HtmlTemplateBlock> convoHtmls = new List<HtmlTemplateBlock>();
-			foreach (KeyValuePair<string, List<IMessage>> kvp in convos) {
+			foreach (Conversation conversation in conversations) {
 				HtmlTemplateBlock convoHtml = (HtmlTemplateBlock)convoTemplate.Clone();
-				convoHtml.SetPlaceholder("CONVO_ID", kvp.Key);
+				convoHtml.SetPlaceholder("CONVO_ID", conversation.Participants.ToString());
 				HtmlTemplateBlock messageTemplate = convoHtml.GetBlock("MESSAGE");
 				List<HtmlTemplateBlock> messages = new List<HtmlTemplateBlock>();
-				foreach (IMessage msg in kvp.Value) {
+				foreach (IMessage msg in conversation) {
 					HtmlTemplateBlock message = (HtmlTemplateBlock)messageTemplate.Clone();
 					message.SetPlaceholder("TIME", msg.Timestamp.ToUnixTime().ToString());
 					message.SetPlaceholder("SENDER", msg.FromContact);

@@ -24,6 +24,14 @@ namespace rd3korca.AndroidSmsHtmlifier
 		private string mContact;
 		private string mText;
 
+		public ParticipantList Participants
+		{
+			get
+			{
+				return new ParticipantList(new string[] { mOwnerName, mContact });
+			}
+		}
+
 		public override string ToString()
 		{
 			return String.Format("From = {0} To = {1} Content = {2}", FromContact, ToContacts[0], mContact.Substring(0, Math.Min(8, mContact.Length)));
