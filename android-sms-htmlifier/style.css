@@ -1,0 +1,121 @@
+html {
+  background: #fff;
+}
+
+body {
+  font-family: 'lucida grande', tahoma, verdana, arial, sans-serif;
+  font-size: 11px;
+  line-height: 14px;
+  position: relative;
+  width: 958px;
+  margin: 32px auto 32px;
+  background: #555;
+  border: 1px #ccc solid;
+}
+
+#sidebar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 239px;
+  background: #f4f4f4;
+  border-right: 1px #ccc solid;
+}
+
+#convo_list {
+  padding: 0;
+  margin: 0;
+}
+
+#convo_list li {
+  list-style: none;
+  background: #e4e4e4;
+  border-bottom: 1px #ccc dashed;
+}
+
+#convo_list li a {
+  display: block;
+  padding: 6px;
+  color: #222;
+}
+
+#convo {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  bottom: 0;
+  width: 719px;
+  box-shadow: inset 0px 0px 18px 2px #333;
+}
+
+a {
+  color: #3B5998;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#people {
+  background: #eee;
+  color: #222;
+  text-align: center;
+  font-weight: bold;
+  line-height: 30px;
+  height: 30px;
+  margin-left: 239px;
+}
+
+#messages {
+  margin: 20px;
+}
+
+#messages ul {
+  padding: 0;
+}
+
+#messages ul li {
+  background: #eee;  border-top: 1px solid #e9e9e9;
+  list-style-type: none;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.time {
+  color: #aaa;
+  float: right;
+}
+
+.content {
+  line-height: 17px;    
+  margin-top: 4px;
+  margin-bottom: 2px;
+  text-align: justify;
+  width: 400px;
+}
+
+.person_1 {
+  background: red;
+}
+
+.person_2 {
+  background: green;
+}
+
+.person_3 {
+  background: blue;
+}
+
+.person_4 {
+  background: lime;
+}
+
+.person_5 {
+  background: aqua;
+}
