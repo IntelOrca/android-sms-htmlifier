@@ -126,3 +126,12 @@ a:hover {
 .person_5 {
   background: aqua;
 }
+
+.daysep {
+    border-bottom: 1px solid #eee;
+    display: block;
+    color: #ccc;
+    font-weight: bold;
+    margin: 4px 0;
+    text-align: center;
+}
