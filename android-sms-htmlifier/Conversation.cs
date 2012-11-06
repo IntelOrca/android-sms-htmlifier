@@ -46,9 +46,12 @@ namespace rd3korca.AndroidSmsHtmlifier
 
 				messages.Clear();
 				currentDay = msg.Timestamp;
+				messages.Add(msg);
 			}
 
-			// return dic.OrderBy(x => x.Key);
+			if (messages.Count > 0)
+				dic.Add(currentDay, messages.ToArray());
+
 			return dic;
 		}
 
