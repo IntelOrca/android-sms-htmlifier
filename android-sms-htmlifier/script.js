@@ -12,7 +12,8 @@ var relativeDate=(function(undefined){var SECOND=1000,MINUTE=60*SECOND,HOUR=60*M
     var time = d.toLocaleTimeString ()
     d = d.toLocaleDateString () + ' @ ' + time;
     timeNodes[i].setAttribute('title', d);
-    timeNodes[i].innerHTML = relativeDate(timeNodes[i].innerHTML) + ' @ ' + time;
+    // timeNodes[i].innerHTML = relativeDate(timeNodes[i].innerHTML) + ' @ ' + time;
+    timeNodes[i].innerHTML = time;
   }
 
   function sidebarItemClick(e){
