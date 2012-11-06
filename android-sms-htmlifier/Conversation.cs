@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -26,6 +27,29 @@ namespace rd3korca.AndroidSmsHtmlifier
 		public int GetParticipantMessageCount(string participant)
 		{
 			return mMessages.Where(x => x.FromContact == participant).Count();
+		}
+
+		public IEnumerable<KeyValuePair<DateTime, IMessage[]>> GetMessagesGroupedByDay()
+		{
+			Dictionary<DateTime, IMessage[]> dic = new Dictionary<DateTime, IMessage[]>();
+			List<IMessage> messages = new List<IMessage>();
+			DateTime currentDay = DateTime.MinValue;
+
+			foreach (IMessage msg in mMessages.OrderBy(x => x.Timestamp)) {
+				if (currentDay.DayOfYear == msg.Timestamp.DayOfYear && currentDay.Year == msg.Timestamp.Year) {
+					messages.Add(msg);
+					continue;
+				}
+
+				if (messages.Count > 0)
+					dic.Add(currentDay, messages.ToArray());
+
+				messages.Clear();
+				currentDay = msg.Timestamp;
+			}
+
+			// return dic.OrderBy(x => x.Key);
+			return dic;
 		}
 
 		public override string ToString()

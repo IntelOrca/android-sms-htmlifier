@@ -37,6 +37,30 @@ namespace rd3korca.AndroidSmsHtmlifier
 			this.Sort(new Comparison<IMessage>((x, y) => x.Timestamp.CompareTo(y.Timestamp)));
 		}
 
+		public Conversation[] GetConversations()
+		{
+			List<Conversation> conversations = new List<Conversation>();
+			foreach (IMessage msg in this) {
+				bool foundConvo = false;
+				foreach (Conversation conversation in conversations) {
+					if (conversation.Participants.Equals(msg.Participants)) {
+						conversation.AddMessage(msg);
+						foundConvo = true;
+						break;
+					}
+				}
+
+				if (!foundConvo) {
+					Conversation conversation = new Conversation(msg.Participants);
+					conversation.AddMessage(msg);
+					conversations.Add(conversation);
+				}
+			}
+			conversations.Sort(new Comparison<Conversation>((x, y) => y.Count.CompareTo(x.Count)));
+
+			return conversations.ToArray();
+		}
+
 		/// <summary>
 		/// Outputs a simple text file log of all the SMSes.
 		/// </summary>
@@ -61,24 +85,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 			block.SetPlaceholder("TITLE", "SMSes");
 
 			// Get converstations
-			List<Conversation> conversations = new List<Conversation>();
-			foreach (IMessage msg in this) {
-				bool foundConvo = false;
-				foreach (Conversation conversation in conversations) {
-					if (conversation.Participants.Equals(msg.Participants)) {
-						conversation.AddMessage(msg);
-						foundConvo = true;
-						break;
-					}
-				}
-
-				if (!foundConvo) {
-					Conversation conversation = new Conversation(msg.Participants);
-					conversation.AddMessage(msg);
-					conversations.Add(conversation);
-				}
-			}
-			conversations.Sort(new Comparison<Conversation>((x, y) => y.Count.CompareTo(x.Count)));
+			IEnumerable<Conversation> conversations = GetConversations();
 
 			// Replace convo tempalte bit
 			HtmlTemplateBlock listItemTemplate = block.GetBlock("LIST");
@@ -100,13 +107,19 @@ namespace rd3korca.AndroidSmsHtmlifier
 				convoHtml.SetPlaceholder("CONVO_ID", conversation.Participants.ToString());
 				HtmlTemplateBlock messageTemplate = convoHtml.GetBlock("MESSAGE");
 				List<HtmlTemplateBlock> messages = new List<HtmlTemplateBlock>();
-				foreach (IMessage msg in conversation) {
-					HtmlTemplateBlock message = (HtmlTemplateBlock)messageTemplate.Clone();
-					message.SetPlaceholder("TIME", msg.Timestamp.ToUnixTime().ToString());
-					message.SetPlaceholder("SENDER", msg.FromContact);
-					message.SetPlaceholder("CONTENT", msg.Text);
-					messages.Add(message);
+
+				foreach (KeyValuePair<DateTime, IMessage[]> kvp in conversation.GetMessagesGroupedByDay()) {
+					messages.Add(new HtmlTemplateBlock("<span class=\"daysep\">" + kvp.Key.ToString("d MMMM yyyy") + "</span>"));
+
+					foreach (IMessage msg in kvp.Value) {
+						HtmlTemplateBlock message = (HtmlTemplateBlock)messageTemplate.Clone();
+						message.SetPlaceholder("TIME", msg.Timestamp.ToUnixTime().ToString());
+						message.SetPlaceholder("SENDER", msg.FromContact);
+						message.SetPlaceholder("CONTENT", msg.Text);
+						messages.Add(message);
+					}
 				}
+
 				convoHtml.ReplaceBlock("MESSAGE", new HtmlTemplateBlock(messages));
 				convoHtmls.Add(convoHtml);
 			}
