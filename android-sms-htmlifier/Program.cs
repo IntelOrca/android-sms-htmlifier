@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
@@ -14,11 +15,44 @@ namespace rd3korca.AndroidSmsHtmlifier
 	{
 		static void Main(string[] args)
 		{
-			string ownerName = "James";
-			Sms[] test = Sms.FromXmlFile("../../test/test.xml", ownerName);
+			if (args.Length < 2) {
+				Console.WriteLine("Android SMS HTMLifer");
+				Console.WriteLine("Usage: android-sms-htmlifier.exe name filename");
+				Console.WriteLine();
+				return;
+			}
+
+			string ownerName = args[0];
+			string xmlPath = args[1];
+			string htmlPath = Path.ChangeExtension(xmlPath, ".html");
+
 			MessageCollection msgCollection = new MessageCollection();
+			Array.ForEach(Sms.FromXmlFile(xmlPath, ownerName), x => msgCollection.Add(x));
+			msgCollection.OutputHtml(htmlPath);
+			
+			
+
+
+			/*
+			string ownerName = "Ted John";
+			string dir = @"C:\Users\Ted\Documents\Years\2010\My Recieved Files\ted2741495219\History";
+			string[] files = Directory.GetFiles(dir, "*.xml");
+			
+			Console.WriteLine("Reading files...");
+			foreach (string file in files)
+				if (file.Contains("kmp"))
+					Array.ForEach(GenericMessage.FromXmlFile(file), x => msgCollection.Add(x));
+
+			Console.WriteLine("Outputing html...");
+			msgCollection.OutputHtml("../../test/test.html", ownerName);
+			*/
+ 
+			/*
+			string ownerName = "Ted John";
+			Sms[] test = Sms.FromXmlFile("../../test/test.xml", ownerName);
 			Array.ForEach(test, x => msgCollection.Add (x));
 			msgCollection.OutputHtml("../../test/test.html", ownerName);
+			*/
 		}
 
 		public static string HtmlSpecialChars(string text)
