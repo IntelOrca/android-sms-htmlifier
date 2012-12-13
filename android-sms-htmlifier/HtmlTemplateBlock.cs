@@ -21,9 +21,16 @@ namespace rd3korca.AndroidSmsHtmlifier
 			mHtml = sb.ToString();
 		}
 
+		public string HtmlSpecialChars(string s)
+		{
+			s = s.Replace("&", "&amp;");
+			s = s.Replace("<", "&lt;");
+			return s;
+		}
+
 		public void SetPlaceholder(string name, string value)
 		{
-			mHtml = mHtml.Replace(String.Format("{{{{{0}}}}}", name), value);
+			mHtml = mHtml.Replace(String.Format("{{{{{0}}}}}", name), HtmlSpecialChars(value));
 		}
 
 		public HtmlTemplateBlock GetBlock(string name)
