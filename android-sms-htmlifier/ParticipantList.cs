@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
-	class ParticipantList
+	class ParticipantList : IEnumerable
 	{
 		private string[] mParticipants;
 
@@ -39,6 +40,11 @@ namespace rd3korca.AndroidSmsHtmlifier
 				sb.AppendFormat("{0}, ", participant);
 			sb.Remove(sb.Length - 2, 2);
 			return sb.ToString();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return mParticipants.GetEnumerator();
 		}
 	}
 }

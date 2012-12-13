@@ -13,7 +13,7 @@
     </aside>
     <section id="people"></section>
     {{BEGIN_CONVO}}
-    <section class="convo" id="convo_{{CONVO_ID}}">
+    <section class="convo" id="convo_{{CONVO_ID}}" data-people="{{PEOPLE_LIST}}">
       <div id="messages">
         <ul>
           {{BEGIN_MESSAGE}}
@@ -27,16 +27,6 @@
       </div>
     </section>
     {{END_CONVO}}
-    <script>
-      people = [
-        ['Person 1 (###) , Person 2 (###)']
-      ];
-      /*
-      people = [
-        {{PEOPLE_LIST}}
-      ];
-      */
-    </script>
     <script src="script.js"></script>
   </body>
 </html>
