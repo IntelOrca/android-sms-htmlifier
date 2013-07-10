@@ -8,7 +8,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 	/// <summary>
 	/// Represents a conversation, a list of messages between a group of participants.
 	/// </summary>
-	class Conversation : IEnumerable<IMessage>
+	public class Conversation : IEnumerable<IMessage>
 	{
 		private List<IMessage> mMessages;
 		private ParticipantList mParticipants;

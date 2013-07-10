@@ -14,7 +14,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 	/// <summary>
 	/// Represents a single SMS.
 	/// </summary>
-	struct Sms : IMessage
+	public struct Sms : IMessage
 	{
 		private string mOwnerName;
 
@@ -45,11 +45,23 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// <returns>an SMS collection of all the SMSes in the xml file.</returns>
 		public static Sms[] FromXmlFile(string xmlPath, string ownerName)
 		{
-			List<Sms> smsCollection = new List<Sms>();
-
 			// Load xml document
 			XmlDocument doc = new XmlDocument();
 			doc.Load(xmlPath);
+			return From(doc, ownerName);
+		}
+
+		public static Sms[] FromXml(string xml, string ownerName)
+		{
+			// Load xml document
+			XmlDocument doc = new XmlDocument();
+			doc.LoadXml(xml);
+			return From(doc, ownerName);
+		}
+
+		private static Sms[] From(XmlDocument doc, string ownerName)
+		{
+			List<Sms> smsCollection = new List<Sms>();
 
 			// Read each sms element
 			foreach (XmlNode smsNode in doc.SelectNodes("smses/sms")) {

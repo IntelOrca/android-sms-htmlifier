@@ -17,8 +17,10 @@ namespace rd3korca.AndroidSmsHtmlifier
 	/// <summary>
 	/// Represents a collection of Messages.
 	/// </summary>
-	class MessageCollection : List<IMessage>
+	public class MessageCollection : List<IMessage>
 	{
+		private string mTemplateFile = "template.html";
+
 		public MessageCollection()
 			: base()
 		{
@@ -37,6 +39,10 @@ namespace rd3korca.AndroidSmsHtmlifier
 			this.Sort(new Comparison<IMessage>((x, y) => x.Timestamp.CompareTo(y.Timestamp)));
 		}
 
+		/// <summary>
+		/// Gets an array of all the messages grouped into conversations.
+		/// </summary>
+		/// <returns></returns>
 		public Conversation[] GetConversations()
 		{
 			List<Conversation> conversations = new List<Conversation>();
@@ -78,10 +84,10 @@ namespace rd3korca.AndroidSmsHtmlifier
 		/// <summary>
 		/// Outputs a complex HTML file containing all the SMSes.
 		/// </summary>
-		/// <param name="path">Path to where to save the HTML file.</param>
-		public void OutputHtml(string path)
+		/// <returns>A string representing the HTML.</returns>
+		public string OutputHtml()
 		{
-			HtmlTemplateBlock block = new HtmlTemplateBlock(File.ReadAllText("template.html"));
+			HtmlTemplateBlock block = new HtmlTemplateBlock(File.ReadAllText(Template));
 			block.SetPlaceholder("TITLE", "SMSes");
 
 			// Get converstations
@@ -105,7 +111,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 			foreach (Conversation conversation in conversations) {
 				HtmlTemplateBlock convoHtml = (HtmlTemplateBlock)convoTemplate.Clone();
 				convoHtml.SetPlaceholder("CONVO_ID", conversation.Participants.ToString());
-				convoHtml.SetPlaceholder("PEOPLE_LIST", (new Func<string>( () => {
+				convoHtml.SetPlaceholder("PEOPLE_LIST", (new Func<string>(() => {
 					StringBuilder sb = new StringBuilder();
 					foreach (string participant in conversation.Participants) {
 						int msgCount = conversation.GetParticipantMessageCount(participant);
@@ -135,13 +141,31 @@ namespace rd3korca.AndroidSmsHtmlifier
 
 			block.ReplaceBlock("CONVO", new HtmlTemplateBlock(convoHtmls));
 
+			return block.Html;
+		}
+
+		/// <summary>
+		/// Outputs a complex HTML file containing all the SMSes.
+		/// </summary>
+		/// <param name="path">Path to where to save the HTML file.</param>
+		public void OutputHtml(string path)
+		{
 			// Output to file
-			File.WriteAllText(path, block.Html);
+			File.WriteAllText(path, OutputHtml());
 
 			string styleDestPath = Path.Combine(Path.GetDirectoryName(path), "style.css");
 			string jsDestPath = Path.Combine(Path.GetDirectoryName(path), "script.js");
 			File.Copy("style.css", styleDestPath, true);
 			File.Copy("script.js", jsDestPath, true);
+		}
+
+		/// <summary>
+		/// Gets or sets the html template path.
+		/// </summary>
+		public string Template
+		{
+			get { return mTemplateFile; }
+			set { mTemplateFile = value; }
 		}
 	}
 }

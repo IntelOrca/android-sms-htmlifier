@@ -23,9 +23,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 
 		public string HtmlSpecialChars(string s)
 		{
-			s = s.Replace("&", "&amp;");
-			s = s.Replace("<", "&lt;");
-			return s;
+			return System.Web.HttpUtility.HtmlEncode(s);
 		}
 
 		public void SetPlaceholder(string name, string value)

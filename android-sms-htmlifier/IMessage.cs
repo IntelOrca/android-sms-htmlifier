@@ -5,7 +5,7 @@ namespace rd3korca.AndroidSmsHtmlifier
 	/// <summary>
 	/// Interface to represent a single message from someone to someone.
 	/// </summary>
-	interface IMessage
+	public interface IMessage
 	{
 		DateTime Timestamp
 		{

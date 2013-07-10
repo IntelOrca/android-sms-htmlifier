@@ -6,7 +6,7 @@ using System.Text;
 
 namespace rd3korca.AndroidSmsHtmlifier
 {
-	class ParticipantList : IEnumerable
+	public class ParticipantList : IEnumerable
 	{
 		private string[] mParticipants;
 
